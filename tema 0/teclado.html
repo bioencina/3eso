@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reto de teclado: Navega seguro</title>
+<style>
+  *{box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;background:#f3f6f9;color:#17202a;margin:0}
+  .wrap{max-width:1050px;margin:auto;padding:24px}
+  header{background:#fff;border:1px solid #d9e1e8;border-radius:16px;padding:22px;margin-bottom:18px}
+  h1{margin:0 0 8px;font-size:32px}
+  h2{margin-top:0}
+  .sub{font-size:18px;color:#4b5563}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}
+  .stat{background:#fff;border:1px solid #d9e1e8;border-radius:12px;padding:14px;text-align:center}
+  .stat b{display:block;font-size:28px;margin-top:4px}
+  .card{background:#fff;border:1px solid #d9e1e8;border-radius:16px;padding:22px}
+  .instructions{background:#eef4f8;border-left:5px solid #4b6475;padding:14px 18px;border-radius:8px;margin-bottom:18px;line-height:1.5}
+  #target{font-family:"Courier New",monospace;font-size:20px;line-height:1.8;padding:18px;background:#fafafa;border:1px solid #d7dce1;border-radius:10px;white-space:pre-wrap;user-select:none}
+  .ok{background:#d9f2df}
+  .bad{background:#ffd7d7;text-decoration:underline}
+  #input{width:100%;min-height:150px;margin-top:16px;padding:16px;font-family:"Courier New",monospace;font-size:20px;line-height:1.6;border:2px solid #9aa7b2;border-radius:10px;resize:vertical}
+  #input:focus{outline:3px solid #c9d8e2}
+  .buttons{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  button{font-size:17px;font-weight:bold;padding:12px 18px;border:0;border-radius:9px;cursor:pointer;background:#263746;color:white}
+  button.secondary{background:#6b7280}
+  #message{font-size:19px;font-weight:bold;margin-top:16px;min-height:26px}
+  .final{display:none;margin-top:18px;padding:18px;border-radius:12px;background:#eef4f8}
+  .small{font-size:14px;color:#5b6570;margin-top:12px}
+  @media(max-width:700px){.stats{grid-template-columns:1fr 1fr} h1{font-size:26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>⌨ Reto de teclado: Navega seguro</h1>
+  <div class="sub">3.º ESO · Escribe el texto exactamente como aparece y practica letras, números y caracteres especiales.</div>
+</header>
+
+<div class="stats">
+  <div class="stat">⏱ Tiempo<b id="time">00:00</b></div>
+  <div class="stat">❌ Errores<b id="errors">0</b></div>
+  <div class="stat">✓ Correctos<b id="correct">0</b></div>
+  <div class="stat">Progreso<b id="progress">0%</b></div>
+</div>
+
+<div class="card">
+  <div class="instructions">
+    <b>Instrucciones:</b> pulsa <b>Empezar</b> y copia el texto de seguridad en Internet exactamente como aparece.
+    Respeta mayúsculas, tildes, números y símbolos. Cada carácter incorrecto suma un error.
+    Puedes corregirlo con <b>Retroceso</b>, pero el error cometido queda registrado.
+    <b>No copies y pegues el texto.</b>
+  </div>
+
+  <h2>Texto que debes escribir</h2>
+  <div id="target"></div>
+
+  <textarea id="input" disabled spellcheck="false" autocomplete="off"
+    placeholder="Pulsa «Empezar» y escribe aquí..."></textarea>
+
+  <div class="buttons">
+    <button id="start">Empezar</button>
+    <button id="restart" class="secondary">Reiniciar</button>
+  </div>
+
+  <div id="message"></div>
+  <div id="final" class="final"></div>
+  <div class="small">Consejo: para escribir caracteres como @ o € necesitarás localizar y utilizar Alt Gr cuando corresponda.</div>
+</div>
+</div>
+
+<script>
+const text = `SEGURIDAD EN INTERNET
+
+Internet es útil, pero debemos usarlo con cuidado. Una contraseña segura no debe ser "12345678" ni contener tu nombre. Es mejor combinar MAYÚSCULAS, minúsculas, números y símbolos como @, #, %, &, + o €.
+
+No compartas tu contraseña con nadie. Antes de abrir un enlace, comprueba quién lo envía y revisa la dirección. Una web que use https:// protege la conexión, pero eso no significa que todo su contenido sea fiable.
+
+Ejemplo: si recibes "¡Has ganado 500 €! Entra aquí y escribe tu contraseña", NO actúes con prisa. Pregúntate: ¿conozco al remitente?, ¿esperaba este mensaje?, ¿me pide datos personales?
+
+Protege también tu privacidad: dirección, teléfono, ubicación, fotografías y documentos son datos personales. Piensa antes de publicar: lo que subes hoy puede permanecer en Internet durante años.
+
+Regla final: PARAR + PENSAR + COMPROBAR = NAVEGAR CON MÁS SEGURIDAD.`;
+
+const target = document.getElementById("target");
+const input = document.getElementById("input");
+const timeEl = document.getElementById("time");
+const errorsEl = document.getElementById("errors");
+const correctEl = document.getElementById("correct");
+const progressEl = document.getElementById("progress");
+const message = document.getElementById("message");
+const final = document.getElementById("final");
+
+let started=false, finished=false, startTime=0, timer=null, errors=0, previousValue="";
+
+function escapeHTML(c){
+  return c.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function render(value=""){
+  let out="";
+  for(let i=0;i<text.length;i++){
+    const c=escapeHTML(text[i]);
+    if(i<value.length){
+      out += value[i]===text[i] ? `<span class="ok">${c}</span>` : `<span class="bad">${c}</span>`;
+    } else out += c;
+  }
+  target.innerHTML=out;
+}
+function formatTime(ms){
+  const s=Math.floor(ms/1000);
+  return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+}
+function updateStats(){
+  let correct=0;
+  for(let i=0;i<input.value.length && i<text.length;i++) if(input.value[i]===text[i]) correct++;
+  correctEl.textContent=correct;
+  progressEl.textContent=Math.min(100,Math.round(input.value.length/text.length*100))+"%";
+}
+function start(){
+  clearInterval(timer);
+  input.value=""; previousValue=""; errors=0; started=true; finished=false;
+  errorsEl.textContent="0"; correctEl.textContent="0"; progressEl.textContent="0%";
+  timeEl.textContent="00:00"; message.textContent=""; final.style.display="none";
+  render();
+  input.disabled=false; input.focus(); startTime=Date.now();
+  timer=setInterval(()=>timeEl.textContent=formatTime(Date.now()-startTime),250);
+}
+function finish(){
+  finished=true; clearInterval(timer); input.disabled=true;
+  const elapsed=Date.now()-startTime;
+  timeEl.textContent=formatTime(elapsed);
+  const accuracy=Math.max(0,Math.round((text.length-errors)/text.length*100));
+  message.textContent="Actividad terminada.";
+  final.style.display="block";
+  final.innerHTML=`<b>Resultado final</b><br><br>
+    Tiempo: <b>${formatTime(elapsed)}</b><br>
+    Errores cometidos: <b>${errors}</b><br>
+    Precisión aproximada: <b>${accuracy}%</b><br><br>
+    Recuerda: en Internet, escribir con atención también ayuda a evitar errores.`;
+}
+input.addEventListener("paste",e=>{e.preventDefault(); message.textContent="No se permite pegar. Debes escribir el texto con el teclado.";});
+input.addEventListener("drop",e=>e.preventDefault());
+input.addEventListener("input",()=>{
+  if(!started || finished) return;
+  let v=input.value;
+  if(v.length>text.length){input.value=v.slice(0,text.length);v=input.value;}
+  // Count only newly typed/replaced characters that are wrong; deletion itself does not add an error.
+  if(v.length>=previousValue.length){
+    let start=Math.max(0, previousValue.length-1);
+    for(let i=start;i<v.length;i++){
+      if(i>=previousValue.length || v[i]!==previousValue[i]){
+        if(v[i]!==text[i]) errors++;
+      }
+    }
+  }
+  errorsEl.textContent=errors;
+  previousValue=v;
+  render(v); updateStats();
+  if(v===text) finish();
+});
+document.getElementById("start").addEventListener("click",start);
+document.getElementById("restart").addEventListener("click",start);
+render();
+</script>
+</body>
+</html>
