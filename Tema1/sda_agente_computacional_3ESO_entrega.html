@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Situación de aprendizaje · Somos agentes computacionales</title>
+<style>
+:root{
+  --bg:#0c1016; --panel:#151b24; --ink:#f7f9fc; --muted:#b9c3d0;
+  --blue:#38bdf8; --green:#4ade80; --yellow:#facc15; --pink:#f472b6;
+  --violet:#c084fc; --line:#344152; --paper:#f7fafc; --dark:#111827;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#eef2f6;color:#17202a;line-height:1.5}
+header{background:var(--bg);color:white;padding:34px max(22px,calc((100% - 1180px)/2))}
+header .tag{color:var(--yellow);font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+header h1{font-size:clamp(2rem,5vw,4rem);line-height:1;margin:.25rem 0 .7rem}
+header p{max-width:900px;color:#d7dee8;font-size:1.08rem}
+main{max-width:1180px;margin:auto;padding:28px 20px 60px}
+.card{background:white;border-radius:18px;padding:24px;margin:18px 0;box-shadow:0 5px 20px #00000010}
+h2{margin-top:0;font-size:1.65rem}
+h3{margin-bottom:.35rem}
+.goal{border-left:7px solid var(--yellow)}
+.agent{background:var(--dark);color:white}
+.agent p,.agent li{color:#dce4ef}
+.agent strong{color:var(--yellow)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.mini{border:1px solid #d9e0e8;border-radius:14px;padding:16px;background:#fafbfd}
+.step{display:grid;grid-template-columns:54px 1fr;gap:14px;align-items:start;border-top:1px solid #e2e8f0;padding:18px 0}
+.step:first-of-type{border-top:0}
+.num{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--blue);font-size:1.3rem;font-weight:900;color:#071018}
+.do{background:#effaff;border-left:5px solid var(--blue);padding:12px 14px;border-radius:10px}
+.question{background:#fff8d9;border-left:5px solid var(--yellow);padding:12px 14px;border-radius:10px;margin-top:10px}
+code{font-family:Consolas,monospace;background:#eef2f7;padding:.1em .35em;border-radius:5px}
+.algorithm{background:#070a0f;color:white;border-radius:18px;padding:24px;box-shadow:0 0 0 3px #4ade8050 inset}
+.algorithm h2{color:var(--green)}
+pre{white-space:pre-wrap;font:15px/1.5 Consolas,monospace;color:#f8fafc;margin:0}
+.kw{color:#c084fc}.var{color:#38bdf8}.val{color:#facc15}.fn{color:#4ade80}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.compare>div{border-radius:14px;padding:18px}
+.human{background:#eefaff;border:2px solid var(--blue)}
+.pc{background:#f3efff;border:2px solid var(--violet)}
+.check{display:flex;gap:10px;align-items:flex-start;margin:.55rem 0}
+.box{width:20px;height:20px;border:2px solid #64748b;flex:0 0 auto;margin-top:2px}
+footer{text-align:center;color:#64748b;padding:20px}
+@media(max-width:700px){.compare{grid-template-columns:1fr}}
+@media print{
+ body{background:white}
+ header{padding:20px;color:white;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .card,.algorithm{box-shadow:none;break-inside:avoid}
+ main{padding:12px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="tag">Situación de aprendizaje · 3.º ESO</div>
+  <h1>Somos agentes computacionales</h1>
+  <p><b>Primero ejecutamos nosotros la solución.</b> Seguirás un algoritmo paso a paso,
+  guardarás los datos en las hojas de memoria y comprobarás qué información utilizas
+  como ser humano. Después nos preguntaremos qué necesitaría un ordenador para hacer exactamente lo mismo.</p>
+</header>
+
+<main>
+<section class="card goal">
+<h2>🎯 El reto</h2>
+<p>Tu grupo recibe un tablero con un <b>ORIGEN</b> y una <b>META</b>. Debéis llegar hasta la meta siguiendo el algoritmo,
+tomando decisiones de movimiento y registrando todo lo que ocurre durante la ejecución.</p>
+<p><b>No eres quien programa todavía: tú eres quien ejecuta el algoritmo.</b> Durante esta actividad,
+el agente computacional sois vosotros.</p>
+</section>
+
+<section class="card">
+<h2>📄 Material que ya tienes</h2>
+<div class="grid">
+ <div class="mini"><h3>🗺️ Tablero 6×6</h3><p>Contiene productos, origen y meta. Aquí moverás físicamente tu ficha.</p></div>
+ <div class="mini"><h3>🧠 Hoja RAM</h3><p>Contiene las posiciones de memoria. Colocarás <b>papeles con los valores</b> que vaya tomando cada dato.</p></div>
+ <div class="mini"><h3>▦ Matriz PRODUCTOS</h3><p>Representará el tablero mediante datos: <b>1</b> Huelva, <b>0</b> vacía y <b>−1</b> no Huelva.</p></div>
+ <div class="mini"><h3>▦ Matriz CAMINO</h3><p>Guardará el recorrido. Comienza a 0 y marcarás con <b>1</b> cada casilla ocupada.</p></div>
+ <div class="mini"><h3>📐 Matriz X/Y</h3><p>Es una referencia de cómo el ordenador localizará las casillas usando píxeles.</p></div>
+ <div class="mini"><h3>🔐 Lista de caracteres</h3><p>Contiene 8 posiciones. Al finalizar, el resultado permitirá obtener un carácter cifrado.</p></div>
+</div>
+</section>
+
+<section class="card agent">
+<h2>🧠 ¿Qué significa ser el agente computacional?</h2>
+<p>Un agente computacional es quien <strong>ejecuta la solución</strong>. Ahora el agente sois vosotros y,
+por tanto, podéis utilizar capacidades humanas que un ordenador no posee.</p>
+<div class="grid">
+ <div class="mini" style="background:#111827;border-color:#334155"><b>👁️ Ves</b><br>en qué casilla estás.</div>
+ <div class="mini" style="background:#111827;border-color:#334155"><b>🍓 Reconoces</b><br>qué producto aparece.</div>
+ <div class="mini" style="background:#111827;border-color:#334155"><b>🧠 Sabes</b><br>si un producto es de Huelva.</div>
+ <div class="mini" style="background:#111827;border-color:#334155"><b>➡️ Entiendes</b><br>qué significa andar o saltar.</div>
+</div>
+<p>Mientras trabajas, piensa: <strong>¿qué información estoy utilizando yo sin que aparezca escrita en el algoritmo?</strong></p>
+</section>
+
+<section class="card">
+<h2>▶️ Ejecución paso a paso</h2>
+
+<div class="step"><div class="num">1</div><div>
+<h3>Prepara la memoria</h3>
+<div class="do">Localiza ORIGEN y META. Escribe sus valores en pequeños papeles y colócalos en
+<code>FILA_ORIGEN</code>, <code>COLUMNA_ORIGEN</code>, <code>FILA_META</code> y <code>COLUMNA_META</code>.
+Copia el origen también en <code>FILA</code> y <code>COLUMNA</code>.</div>
+</div></div>
+
+<div class="step"><div class="num">2</div><div>
+<h3>Coloca al agente</h3>
+<div class="do">Sitúa la ficha en el origen. Marca esa posición con <b>1</b> en <code>MATRIZ_CAMINO</code>.
+La matriz es la memoria del recorrido.</div>
+<div class="question">💭 ¿Necesitas X e Y para saber dónde estás? Como humano, probablemente no. Déjalas disponibles: después veremos quién sí las necesita.</div>
+</div></div>
+
+<div class="step"><div class="num">3</div><div>
+<h3>Toma una decisión</h3>
+<div class="do">Elige <b>ANDAR</b> o <b>SALTAR</b>. Pon el papel correspondiente en <code>ANDAR_O_SALTAR</code>.
+Después elige ↑ ↓ ← → y coloca el valor en <code>DIRECCIÓN</code>.</div>
+</div></div>
+
+<div class="step"><div class="num">4</div><div>
+<h3>Ejecuta la función mover()</h3>
+<div class="do">Si ANDAS, <code>DISTANCIA = 1</code>. Si SALTAS, <code>DISTANCIA = 2</code>.
+Sustituye el papel anterior de DISTANCIA por el nuevo valor y mueve la ficha en la dirección elegida.
+Actualiza los papeles de <code>FILA</code> y <code>COLUMNA</code>.</div>
+<div class="question">💭 Una función reúne instrucciones que realizan una tarea concreta. Recibe <b>parámetros</b>: aquí, el modo de movimiento y la dirección.</div>
+</div></div>
+
+<div class="step"><div class="num">5</div><div>
+<h3>Guarda el camino</h3>
+<div class="do">En <code>MATRIZ_CAMINO</code>, escribe <b>1</b> en la nueva casilla ocupada.
+Si has SALTADO, la casilla sobre la que has pasado <b>no forma parte del camino</b> y permanece a 0.</div>
+</div></div>
+
+<div class="step"><div class="num">6</div><div>
+<h3>Actualiza la puntuación</h3>
+<div class="do">Observa el producto de la casilla en la que has caído y actualiza <code>PUNTOS</code>.
+Retira el papel con el valor anterior y coloca el nuevo.</div>
+<div class="question">💭 Tú reconoces el producto mirando una imagen. ¿Cómo podría saberlo un ordenador?</div>
+</div></div>
+
+<div class="step"><div class="num">7</div><div>
+<h3>Comprueba la condición</h3>
+<div class="do">Compara <code>FILA</code> y <code>COLUMNA</code> con <code>FILA_META</code> y <code>COLUMNA_META</code>.
+Si todavía no has llegado, <b>el control vuelve al comienzo de la repetición</b> y eliges otro movimiento.
+Si has llegado, la repetición termina y el control pasa a la <b>primera instrucción situada después del MIENTRAS</b>.</div>
+</div></div>
+
+<div class="step"><div class="num">8</div><div>
+<h3>Obtén el carácter cifrado</h3>
+<div class="do">Utiliza el resultado indicado por el algoritmo para acceder a una posición de
+<code>LISTA_CARACTERES_CIFRADOS</code>. Anota el carácter obtenido por tu grupo.
+Los caracteres de todos los grupos formarán una <b>palabra encriptada</b>.</div>
+</div></div>
+</section>
+
+<section class="algorithm">
+<h2>⚙️ El algoritmo que estás ejecutando</h2>
+<pre><span class="kw">INICIO</span>
+  fila ← fila_origen
+  columna ← columna_origen
+  camino[fila][columna] ← 1
+
+  <span class="kw">MIENTRAS</span> fila ≠ fila_meta O columna ≠ columna_meta <span class="kw">HACER</span>
+      LEER andar_o_saltar
+      LEER direccion
+
+      <span class="fn">mover</span>(andar_o_saltar, direccion)
+
+      camino[fila][columna] ← 1
+      puntos ← puntos + productos[fila][columna]
+  <span class="kw">FIN MIENTRAS</span>
+
+  obtener carácter cifrado de la lista
+<span class="kw">FIN</span>
+
+
+<span class="kw">FUNCIÓN</span> <span class="fn">mover</span>(andar_o_saltar, direccion)
+
+  <span class="kw">SI</span> andar_o_saltar = "ANDAR" <span class="kw">ENTONCES</span>
+      distancia ← 1
+  <span class="kw">SINO</span>
+      distancia ← 2
+  <span class="kw">FIN SI</span>
+
+  <span class="kw">SEGÚN</span> direccion
+      ARRIBA:    fila ← fila - distancia
+      ABAJO:     fila ← fila + distancia
+      IZQUIERDA: columna ← columna - distancia
+      DERECHA:   columna ← columna + distancia
+  <span class="kw">FIN SEGÚN</span>
+
+<span class="kw">FIN FUNCIÓN</span></pre>
+</section>
+
+<section class="card">
+<h2>🔄 Ahora cambiaremos de agente</h2>
+<div class="compare">
+<div class="human">
+<h3>👤 Agente humano</h3>
+<p>Ve la ficha, interpreta las imágenes, conoce productos, entiende las flechas y sabe qué significa desplazarse una o dos casillas.</p>
+</div>
+<div class="pc">
+<h3>💻 Agente ordenador</h3>
+<p>No puede dar nada de eso por supuesto. Tendremos que representar explícitamente la información mediante <b>datos, variables, matrices y coordenadas X/Y</b>.</p>
+</div>
+</div>
+<p class="question"><b>Pregunta final:</b> revisa todo lo que has hecho como humano. ¿Qué cosas has sabido o decidido sin que nadie tuviera que explicártelas mediante números e instrucciones exactas?</p>
+</section>
+
+<section class="card">
+<h2>✅ Evidencias que debe entregar el grupo</h2>
+<div class="check"><span class="box"></span><span>Hoja RAM con los valores utilizados durante la ejecución.</span></div>
+<div class="check"><span class="box"></span><span>MATRIZ_PRODUCTOS representada mediante datos.</span></div>
+<div class="check"><span class="box"></span><span>MATRIZ_CAMINO con el recorrido realizado.</span></div>
+<div class="check"><span class="box"></span><span>Carácter cifrado obtenido por el grupo.</span></div>
+<div class="check"><span class="box"></span><span>Explicación de qué información utilizó el agente humano que necesitaríamos proporcionar explícitamente a un ordenador.</span></div>
+</section>
+
+<section class="card" id="entrega">
+<h2>📸 Entrega digital de la actividad</h2>
+<p>Cuando terminéis la ejecución, utilizad la cámara del portátil para dejar constancia del trabajo realizado.
+El archivo final reunirá <b>las fotografías y vuestras respuestas</b> en un único documento que podréis descargar y entregar.</p>
+
+<div class="grid">
+  <div class="mini">
+    <h3>1. Identifica el grupo</h3>
+    <label><b>Grupo / equipo</b></label>
+    <input id="grupo" type="text" placeholder="Ej.: Grupo 3" style="width:100%;padding:10px;margin-top:6px">
+    <label style="display:block;margin-top:10px"><b>Componentes</b></label>
+    <input id="componentes" type="text" placeholder="Nombres del equipo" style="width:100%;padding:10px;margin-top:6px">
+  </div>
+
+  <div class="mini">
+    <h3>2. Fotografía las hojas</h3>
+    <p>Haz una fotografía en la que se vean claramente la RAM y las matrices que habéis completado.</p>
+    <input id="fotoTrabajo" type="file" accept="image/*" capture="environment">
+    <div id="previewTrabajo" style="margin-top:10px"></div>
+  </div>
+
+  <div class="mini">
+    <h3>3. Fotografía el tablero</h3>
+    <p>Fotografía el tablero con el recorrido realizado.</p>
+    <input id="fotoTablero" type="file" accept="image/*" capture="environment">
+    <div id="previewTablero" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<h3 style="margin-top:24px">4. Explica lo que habéis descubierto</h3>
+
+<label><b>¿Qué carácter cifrado ha obtenido vuestro grupo?</b></label>
+<input id="caracter" type="text" maxlength="3" placeholder="Escribe el carácter"
+       style="width:100%;padding:10px;margin:6px 0 16px">
+
+<label><b>¿Qué información habéis utilizado como agentes humanos sin necesitar que estuviera escrita como dato?</b></label>
+<textarea id="respuestaHumano" rows="4" placeholder="Explicadlo con vuestras palabras..."
+          style="width:100%;padding:10px;margin:6px 0 16px;resize:vertical"></textarea>
+
+<label><b>¿Qué información necesitaría recibir un ordenador para poder realizar el mismo recorrido?</b></label>
+<textarea id="respuestaOrdenador" rows="4" placeholder="Pensad en posición, productos, movimiento, pantalla..."
+          style="width:100%;padding:10px;margin:6px 0 16px;resize:vertical"></textarea>
+
+<label><b>¿Qué diferencia habéis encontrado entre ejecutar el algoritmo como humanos y ejecutarlo con un ordenador?</b></label>
+<textarea id="respuestaDiferencia" rows="4" placeholder="Escribid vuestra conclusión..."
+          style="width:100%;padding:10px;margin:6px 0 16px;resize:vertical"></textarea>
+
+<div id="avisoEntrega" class="question" style="display:none"></div>
+
+<button id="descargarEntrega" type="button"
+ style="margin-top:12px;padding:14px 20px;border:0;border-radius:10px;background:#111827;color:white;font-weight:800;font-size:1rem;cursor:pointer">
+⬇️ Descargar archivo de entrega
+</button>
+
+<p style="font-size:.9rem;color:#64748b;margin-top:12px">
+El archivo se genera en este ordenador. Incluye las respuestas y las fotografías seleccionadas.
+</p>
+</section>
+
+<script>
+let fotoTrabajoData = "";
+let fotoTableroData = "";
+
+function prepararFoto(inputId, previewId, destino) {
+  const input = document.getElementById(inputId);
+  input.addEventListener("change", function () {
+    const file = this.files && this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const max = 1200;
+        let w = img.width, h = img.height;
+        if (w > max || h > max) {
+          const escala = Math.min(max / w, max / h);
+          w = Math.round(w * escala);
+          h = Math.round(h * escala);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+        const data = canvas.toDataURL("image/jpeg", 0.78);
+        if (destino === "trabajo") fotoTrabajoData = data;
+        if (destino === "tablero") fotoTableroData = data;
+        document.getElementById(previewId).innerHTML =
+          '<img src="' + data + '" alt="Vista previa" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid #cbd5e1">';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+prepararFoto("fotoTrabajo","previewTrabajo","trabajo");
+prepararFoto("fotoTablero","previewTablero","tablero");
+
+function esc(t) {
+  return String(t || "").replace(/[&<>"']/g, m => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  })[m]);
+}
+
+document.getElementById("descargarEntrega").addEventListener("click", function() {
+  const grupo = document.getElementById("grupo").value.trim();
+  const componentes = document.getElementById("componentes").value.trim();
+  const caracter = document.getElementById("caracter").value.trim();
+  const humano = document.getElementById("respuestaHumano").value.trim();
+  const ordenador = document.getElementById("respuestaOrdenador").value.trim();
+  const diferencia = document.getElementById("respuestaDiferencia").value.trim();
+  const aviso = document.getElementById("avisoEntrega");
+
+  if (!grupo || !componentes || !caracter || !humano || !ordenador || !diferencia || !fotoTrabajoData || !fotoTableroData) {
+    aviso.style.display = "block";
+    aviso.innerHTML = "⚠️ Antes de descargar, completa todas las respuestas y añade las dos fotografías.";
+    return;
+  }
+  aviso.style.display = "none";
+
+  const informe = `<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><title>Entrega ${esc(grupo)}</title>
+<style>
+body{font-family:Arial,sans-serif;max-width:900px;margin:35px auto;padding:0 25px;color:#17202a}
+h1{border-bottom:4px solid #111827;padding-bottom:10px}
+h2{margin-top:28px}.dato{background:#f1f5f9;padding:12px;border-radius:8px}
+img{max-width:100%;margin:10px 0 25px;border:1px solid #cbd5e1;border-radius:8px}
+.respuesta{white-space:pre-wrap;background:#f8fafc;border-left:5px solid #38bdf8;padding:12px}
+@media print{body{margin:0}.salto{break-before:page}}
+</style></head><body>
+<h1>Somos agentes computacionales · Entrega</h1>
+<div class="dato"><b>Grupo:</b> ${esc(grupo)}<br><b>Componentes:</b> ${esc(componentes)}<br><b>Carácter cifrado:</b> ${esc(caracter)}</div>
+<h2>Fotografía de la RAM y matrices</h2><img src="${fotoTrabajoData}">
+<h2 class="salto">Fotografía del tablero y recorrido</h2><img src="${fotoTableroData}">
+<h2>¿Qué información utilizamos como agentes humanos?</h2><div class="respuesta">${esc(humano)}</div>
+<h2>¿Qué información necesitaría el ordenador?</h2><div class="respuesta">${esc(ordenador)}</div>
+<h2>Diferencia entre agente humano y ordenador</h2><div class="respuesta">${esc(diferencia)}</div>
+</body></html>`;
+
+  const blob = new Blob([informe], {type:"text/html;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const nombreSeguro = grupo.replace(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_-]+/g,"_");
+  a.href = url;
+  a.download = "Entrega_Agente_Computacional_" + nombreSeguro + ".html";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+</script>
+
+</main>
+<footer>Del problema al programa · Pensamiento computacional · 3.º ESO</footer>
+</body>
+</html>
