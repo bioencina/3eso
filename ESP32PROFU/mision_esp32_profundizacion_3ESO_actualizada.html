@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Misión ESP32 · Profundización 3.º ESO</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#182235;--muted:#5d687a;--line:#dce4ef;--accent:#2563eb;--accent2:#0f766e;--warn:#92400e;--soft:#eef4ff}
+*{box-sizing:border-box} body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+header{background:#13213a;color:white;padding:34px 18px} header .wrap,main{max-width:980px;margin:auto}
+h1{margin:0 0 8px;font-size:clamp(1.8rem,4vw,3rem)} h2{margin-top:0}.sub{color:#dbe7ff;max-width:760px}
+main{padding:24px 16px 70px}.intro,.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 4px 14px #1725540b}
+button.section{width:100%;text-align:left;border:0;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:17px 18px;margin:7px 0;font-size:1.05rem;font-weight:750;cursor:pointer}
+button.section:hover{border-color:#9eb7e8;background:#fbfdff}.content{display:none;background:white;border:1px solid var(--line);border-top:0;border-radius:0 0 14px 14px;padding:20px;margin:-9px 0 12px}
+.content.open{display:block}.tag{display:inline-block;background:var(--soft);color:#1747a6;padding:3px 9px;border-radius:999px;font-size:.85rem;font-weight:700}
+.task{background:#f0fdfa;border-left:5px solid var(--accent2);padding:14px 16px;border-radius:8px;margin:14px 0}.note{background:#fff7ed;border-left:5px solid #f59e0b;padding:14px 16px;border-radius:8px}
+code,pre{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}pre{background:#111827;color:#f8fafc;padding:16px;border-radius:10px;overflow:auto}
+.hint button,.teacherBtn{border:1px solid #b8c8e8;background:#f7faff;border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:650}.hintText{display:none;margin:8px 0 12px;padding:11px;background:#f8fafc;border-radius:8px}
+.check label{display:block;margin:8px 0}.teacher{margin-top:30px;border:2px dashed #94a3b8}.teacherArea{display:none}.solution{display:none}.small{font-size:.92rem;color:var(--muted)}
+a{color:#1747a6}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}.mini{border:1px solid var(--line);border-radius:10px;padding:12px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<span class="tag">3.º ESO · Profundización</span>
+<h1>Misión ESP32</h1>
+<p class="sub">Tu objetivo es aprender a trabajar de forma autónoma con una ESP32: preparar Arduino IDE, comprender la placa, configurar la conexión, cargar programas y construir un termómetro que muestre la temperatura del aula.</p>
+</div></header>
+
+<main>
+<section class="intro">
+<h2>Cómo trabajar</h2>
+<p>No tienes que terminar deprisa. Lee, prueba y comprende. Cuando algo falle, intenta averiguar <strong>qué parte</strong> está fallando antes de pedir ayuda. Usa las pistas en orden: empieza siempre por la primera.</p>
+<p><strong>Regla:</strong> no copies un programa completo sin entenderlo. Al finalizar debes poder explicar qué hace cada parte importante.</p>
+</section>
+
+<button class="section">01 · Prepara Arduino IDE ▾</button>
+<section class="content">
+<h2>Arduino IDE</h2>
+<p>Arduino IDE es el entorno que utilizaremos para escribir, comprobar, compilar y cargar programas en la ESP32.</p>
+<div class="task"><strong>En el aula:</strong> el archivo <strong>AppImage de Arduino IDE está disponible en Classroom</strong>. Descárgalo desde allí al ordenador.</div>
+<h3>¿Qué es un AppImage?</h3>
+<p>Es una forma de distribuir aplicaciones para Linux en un único archivo. En lugar de realizar una instalación tradicional, el archivo contiene lo necesario para ejecutar la aplicación. Normalmente se descarga, se concede permiso para ejecutarlo y después se abre.</p>
+<ol><li>Descarga el archivo desde Classroom.</li><li>Localízalo en Descargas.</li><li>Si no se ejecuta directamente, abre sus propiedades y comprueba que tiene permiso para ejecutarse como programa.</li><li>Abre Arduino IDE.</li></ol>
+<h3>¿Y si quieres utilizarlo en Windows?</h3>
+<p>Fuera del aula puedes descargar Arduino IDE 2 desde la página oficial de Arduino:</p>
+<p><a href="https://www.arduino.cc/en/software" target="_blank" rel="noopener">Abrir página oficial de Arduino Software</a></p>
+<p class="small">En Windows no utilizarías el AppImage de Linux: elegirías la versión correspondiente a Windows.</p>
+<div class="check"><label><input type="checkbox"> He abierto Arduino IDE.</label><label><input type="checkbox"> Sé explicar qué diferencia básica hay entre un AppImage y un instalador tradicional.</label></div>
+</section>
+
+<button class="section">02 · Conoce la ESP32 ▾</button>
+<section class="content">
+<h2>¿Qué es una ESP32?</h2>
+<p>La ESP32 es una familia de microcontroladores que permite construir sistemas electrónicos programables. Las placas de desarrollo ESP32 incorporan el microcontrolador y otros componentes que facilitan alimentarlo, programarlo y conectarlo con sensores y actuadores.</p>
+<div class="grid">
+<div class="mini"><strong>Entradas</strong><br>Sensores, pulsadores y señales del entorno.</div>
+<div class="mini"><strong>Procesamiento</strong><br>El programa toma decisiones con los datos.</div>
+<div class="mini"><strong>Salidas</strong><br>LED, motores, pantallas, relés...</div>
+<div class="mini"><strong>Comunicación</strong><br>Según el modelo, Wi‑Fi, Bluetooth y buses de comunicación.</div>
+</div>
+<div class="task"><strong>Piensa:</strong> en el termómetro que vas a construir, ¿qué elemento será la entrada?, ¿qué procesará el dato? y ¿dónde veremos la salida?</div>
+</section>
+
+<button class="section">03 · Lo que vas a aprender ▾</button>
+<section class="content">
+<ul>
+<li>Reconocer las partes principales de Arduino IDE.</li>
+<li>Configurar la placa ESP32 y seleccionar el puerto correcto.</li>
+<li>Distinguir entre escribir, compilar, cargar y ejecutar un programa.</li>
+<li>Cargar un programa en la ESP32.</li>
+<li>Utilizar el Monitor Serie para observar datos.</li>
+<li>Comprender la estructura básica de un programa Arduino.</li>
+<li>Interpretar los pines principales de una placa ESP32.</li>
+<li>Utilizar una librería para trabajar con un sensor.</li>
+<li>Comprender parámetros, funciones y valores devueltos.</li>
+<li>Medir la temperatura del aula y mostrarla por el Monitor Serie.</li>
+</ul>
+</section>
+
+<button class="section">04 · Descubre setup() y loop() ▾</button>
+<section class="content">
+<p>Un programa nuevo de Arduino comienza con una estructura parecida a esta:</p>
+<pre><code>void setup() {
+
+}
+
+void loop() {
+
+}</code></pre>
+<p><strong>setup()</strong> se ejecuta al comenzar el programa. Se utiliza para realizar preparaciones y configuraciones que deben hacerse al inicio.</p>
+<p><strong>loop()</strong> se ejecuta repetidamente mientras la placa está funcionando.</p>
+<div class="task"><strong>Antes de continuar:</strong> decide dónde colocarías una instrucción que inicia una comunicación una sola vez y dónde colocarías una lectura de temperatura que debe repetirse.</div>
+</section>
+
+
+<button class="section">05 · Configura Arduino IDE para la ESP32 ▾</button>
+<section class="content">
+<h2>Instala el soporte para ESP32</h2>
+<p>Arduino IDE puede programar muchas placas diferentes. Antes de utilizar nuestra ESP32 debes instalar en el IDE el paquete que permite reconocer y programar esta familia de placas.</p>
+<ol>
+<li>Abre <strong>Boards Manager / Gestor de placas</strong>.</li>
+<li>En el buscador escribe <strong>esp32</strong>.</li>
+<li>Busca <strong>esp32 by Espressif Systems</strong>.</li>
+<li>Pulsa <strong>Install / Instalar</strong>. Si aparece <strong>installed</strong>, ya está instalado.</li>
+</ol>
+<div class="note"><strong>Importante:</strong> esto no es una librería para un sensor. Es el paquete de placas que permite que Arduino IDE pueda trabajar con la ESP32.</div>
+
+<h3>Selecciona la placa correcta</h3>
+<p>Al instalar el paquete aparecerán muchas placas. Para esta actividad debes seleccionar:</p>
+<div class="task"><strong>ESP32 Dev Module</strong></div>
+
+<h3>Selecciona el puerto</h3>
+<p>El puerto es la conexión lógica que utiliza el ordenador para comunicarse con la ESP32 mediante USB.</p>
+<ol>
+<li>Observa los puertos disponibles antes de conectar la placa.</li>
+<li>Conecta la ESP32 por USB.</li>
+<li>Vuelve a abrir la lista de puertos.</li>
+<li>El puerto nuevo suele ser el de tu ESP32. En Linux puede aparecer como <code>/dev/ttyUSB0</code> o <code>/dev/ttyACM0</code>.</li>
+<li>Selecciona ese puerto.</li>
+</ol>
+<div class="task"><strong>Antes de continuar:</strong> comprueba que tienes seleccionados <strong>ESP32 Dev Module</strong> y el puerto de tu placa.</div>
+</section>
+
+<button class="section">06 · Comprende el programa Arduino ▾</button>
+<section class="content">
+<p>Este es tu primer programa escrito en texto. No tienes que conocer todavía la sintaxis: vamos a aprenderla mientras construimos el programa.</p>
+<pre><code>void setup() {
+
+}
+
+void loop() {
+
+}</code></pre>
+<p><strong>setup()</strong> se ejecuta una vez al arrancar o reiniciar la placa. Aquí prepararemos el sensor y la comunicación con el ordenador.</p>
+<p><strong>loop()</strong> se ejecuta continuamente. Aquí leeremos la temperatura y mostraremos nuevas medidas.</p>
+<p>Las llaves <code>{</code> y <code>}</code> delimitan las instrucciones de cada función. Muchas instrucciones de Arduino/C++ terminan con <code>;</code>.</p>
+</section>
+
+<button class="section">07 · Instala y llama a la librería del DHT11 ▾</button>
+<section class="content">
+<h2>¿Qué es una librería?</h2>
+<p>Una librería contiene código ya preparado que podemos utilizar. Para trabajar con el DHT11 no vamos a programar desde cero la comunicación con el sensor: utilizaremos una librería.</p>
+<ol>
+<li>Abre <strong>Library Manager / Gestor de bibliotecas</strong>.</li>
+<li>Busca la librería para sensores DHT de <strong>Adafruit</strong>.</li>
+<li>Instálala. Si Arduino IDE solicita instalar dependencias necesarias, acéptalas.</li>
+</ol>
+<h3>Incluir la librería</h3>
+<p>La llamada se escribe <strong>al principio del programa, antes de setup()</strong>:</p>
+<pre><code>#include &lt;DHT.h&gt;
+
+void setup() {
+
+}
+
+void loop() {
+
+}</code></pre>
+<p><code>#include</code> indica que nuestro programa necesita utilizar esa librería.</p>
+
+<h3>Indicar sensor y pin</h3>
+<pre><code>#define DHTPIN NUMERO_DEL_PIN
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);</code></pre>
+<p><code>DHTPIN</code> representa el GPIO al que está conectado DATA. <code>DHTTYPE</code> indica que utilizamos un DHT11. En <code>DHT dht(DHTPIN, DHTTYPE)</code> creamos un objeto llamado <code>dht</code> y le pasamos esos dos datos como <strong>parámetros</strong>.</p>
+<div class="note"><strong>No inventes NUMERO_DEL_PIN:</strong> utiliza el GPIO indicado para el montaje.</div>
+</section>
+
+<button class="section">08 · Prepara el sensor y la comunicación Serie ▾</button>
+<section class="content">
+<p>En <code>setup()</code> iniciaremos las cosas que necesitamos preparar una sola vez.</p>
+<h3>Iniciar el DHT11</h3>
+<pre><code>dht.begin();</code></pre>
+<h3>Iniciar la comunicación con el ordenador</h3>
+<pre><code>Serial.begin(115200);</code></pre>
+<p><code>115200</code> es la velocidad de comunicación. Más adelante tendrás que seleccionar esa misma velocidad en el Monitor Serie.</p>
+<h3>Ejemplo de setup()</h3>
+<pre><code>void setup() {
+    Serial.begin(115200);
+    dht.begin();
+}</code></pre>
+<div class="task"><strong>Piensa:</strong> ¿por qué estas instrucciones pertenecen a <code>setup()</code> y no a <code>loop()</code>?</div>
+</section>
+
+<button class="section">09 · Aprende a leer la temperatura ▾</button>
+<section class="content">
+<p>Para pedir al sensor una medida utilizamos una función:</p>
+<pre><code>dht.readTemperature()</code></pre>
+<p>Los paréntesis forman parte de la llamada. En este caso no introducimos parámetros dentro de ellos. La función <strong>devuelve</strong> la temperatura medida.</p>
+<p>Tenemos que guardar ese resultado en una variable:</p>
+<pre><code>float temperatura = dht.readTemperature();</code></pre>
+<table style="width:100%;border-collapse:collapse">
+<tr><th style="text-align:left">Parte</th><th style="text-align:left">Significado</th></tr>
+<tr><td><code>float</code></td><td>Tipo de dato que admite números con decimales.</td></tr>
+<tr><td><code>temperatura</code></td><td>Nombre de la variable.</td></tr>
+<tr><td><code>=</code></td><td>Guarda el resultado de la derecha en la variable.</td></tr>
+<tr><td><code>dht.readTemperature()</code></td><td>Realiza la lectura y devuelve la temperatura.</td></tr>
+</table>
+<p>El DHT11 también puede devolver humedad:</p>
+<pre><code>float humedad = dht.readHumidity();</code></pre>
+<p>En este primer reto céntrate en la temperatura. La humedad será una posible ampliación.</p>
+</section>
+
+<button class="section">10 · Muestra la temperatura en el Monitor Serie ▾</button>
+<section class="content">
+<p>Para mostrar el valor:</p>
+<pre><code>Serial.println(temperatura);</code></pre>
+<p>Si quieres que la salida sea más clara:</p>
+<pre><code>Serial.print("Temperatura: ");
+Serial.print(temperatura);
+Serial.println(" °C");</code></pre>
+<p><code>print</code> continúa escribiendo en la misma línea. <code>println</code> escribe y después cambia de línea.</p>
+
+<h3>Abre el Monitor Serie</h3>
+<ol>
+<li>Compila el programa.</li>
+<li>Cárgalo en la ESP32.</li>
+<li>Abre <strong>Serial Monitor / Monitor Serie</strong>.</li>
+<li>Selecciona <strong>115200 baud</strong>, porque debe coincidir con <code>Serial.begin(115200)</code>.</li>
+<li>Observa los datos que envía la placa.</li>
+</ol>
+</section>
+
+<button class="section">11 · Controla cada cuánto se mide ▾</button>
+<section class="content">
+<p><code>loop()</code> se repite muy rápidamente. Para no intentar leer el DHT11 continuamente utilizaremos:</p>
+<pre><code>delay(2000);</code></pre>
+<p><code>delay</code> recibe un <strong>parámetro</strong> expresado en milisegundos. 2000 ms son 2 segundos.</p>
+<div class="task"><strong>Compara:</strong> <code>delay(2000)</code> recibe un parámetro. <code>dht.readTemperature()</code> no recibe ninguno, pero devuelve un valor.</div>
+</section>
+
+<button class="section">12 · Reto: construye tu termómetro 🌡️ ▾</button>
+<section class="content">
+<h2>Ya tienes todas las instrucciones necesarias</h2>
+<p>Ahora debes construir tú el programa. No necesitas adivinar sintaxis: vuelve a los apartados anteriores cuando no recuerdes una instrucción.</p>
+<ol>
+<li>Incluye <code>DHT.h</code>.</li>
+<li>Define el GPIO del sensor.</li>
+<li>Indica que utilizas un <code>DHT11</code>.</li>
+<li>Crea el objeto <code>dht</code>.</li>
+<li>En <code>setup()</code>, inicia Serial y el sensor.</li>
+<li>En <code>loop()</code>, lee la temperatura y guárdala en una variable <code>float</code>.</li>
+<li>Muestra texto, temperatura y unidad °C.</li>
+<li>Espera 2 segundos.</li>
+<li>Compila y corrige los errores que aparezcan.</li>
+<li>Carga el programa en la ESP32.</li>
+<li>Abre el Monitor Serie a 115200.</li>
+</ol>
+<div class="task"><strong>Has terminado cuando</strong> el Monitor Serie muestra periódicamente la temperatura del aula y puedes explicar qué hace cada parte de tu programa.</div>
+</section>
+
+<button class="section">13 · Si algo falla: diagnóstico autónomo 🔧 ▾</button>
+<section class="content">
+<p><strong>No compila:</strong> lee el primer error. Revisa nombres, mayúsculas, <code>;</code>, paréntesis, llaves y librería.</p>
+<p><strong>No reconoce DHT:</strong> comprueba la instalación de la librería y <code>#include &lt;DHT.h&gt;</code>.</p>
+<p><strong>Compila pero no carga:</strong> revisa <strong>ESP32 Dev Module</strong>, puerto, cable USB y conexión.</p>
+<p><strong>Monitor Serie vacío:</strong> comprueba <code>Serial.begin(115200)</code>, las instrucciones <code>Serial.print...</code> y que el monitor esté a 115200.</p>
+<p><strong>Aparece NaN:</strong> no se ha obtenido una lectura numérica válida. Revisa GPIO, DHT11, conexiones y tiempo entre lecturas.</p>
+<div class="task"><strong>Antes de consultar:</strong> explica a la profesora si compila, si carga, qué aparece en el Monitor Serie y cuál es el primer mensaje de error.</div>
+</section>
+<section class="panel teacher">
+<h2>🔒 Zona de comprobación docente</h2>
+<p class="small">Esta zona sirve para que la profesora pueda consultar rápidamente una solución de referencia cuando haya que diagnosticar un error.</p>
+<input id="pass" type="password" placeholder="Clave" style="padding:10px;border:1px solid #bcc8d8;border-radius:8px">
+<button class="teacherBtn" id="unlock">Abrir</button>
+<p id="msg" class="small"></p>
+<div class="teacherArea" id="teacherArea">
+<p><strong>Nota:</strong> la solución definitiva debe adaptarse al <strong>modelo exacto de ESP32 y al sensor exacto</strong>. Hasta que se definan, no se muestra un programa que pueda inducir a conexiones o librerías incorrectas.</p>
+<div class="solution" id="solution">
+<pre><code>#include &lt;DHT.h&gt;
+
+#define DHTPIN NUMERO_GPIO
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+    Serial.begin(115200);
+    dht.begin();
+}
+
+void loop() {
+    float temperatura = dht.readTemperature();
+
+    Serial.print("Temperatura: ");
+    Serial.print(temperatura);
+    Serial.println(" °C");
+
+    delay(2000);
+}</code></pre>
+</div>
+<button class="teacherBtn" onclick="document.getElementById('solution').style.display='block'">Mostrar plantilla de solución</button>
+</div>
+</section>
+</main>
+
+<script>
+document.querySelectorAll('button.section').forEach(b=>{
+ b.addEventListener('click',()=>b.nextElementSibling.classList.toggle('open'));
+});
+document.querySelectorAll('.hint button').forEach(b=>{
+ b.addEventListener('click',()=>{const t=b.nextElementSibling;t.style.display=t.style.display==='block'?'none':'block';});
+});
+
+// No se guarda la contraseña en texto legible.
+// Hash SHA-256 de una clave docente provisional. Cambiar antes de entregar.
+const expectedHash="1278c38bdacfdde360ae035b9d84486dd71507c558af164b81d982b38061133b";
+async function sha256(s){
+ const data=new TextEncoder().encode(s);
+ const hash=await crypto.subtle.digest("SHA-256",data);
+ return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+document.getElementById('unlock').addEventListener('click',async()=>{
+ const h=await sha256(document.getElementById('pass').value);
+ const ok=h===expectedHash;
+ document.getElementById('teacherArea').style.display=ok?'block':'none';
+ document.getElementById('msg').textContent=ok?'Acceso correcto.':'Clave incorrecta.';
+});
+</script>
+</body>
+</html>
